@@ -1,0 +1,1388 @@
+name: SV_RETAIL_ANALYTICS
+tables:
+  - name: DIM_CUSTOMER
+    description: The table contains records of customers, including their personal contact information and geographic location. Each record captures the validity period of the customer data, supporting historical tracking of customer attributes over time.
+    base_table:
+      database: RETAIL_ANALYTICS
+      schema: GOLD
+      table: DIM_CUSTOMER
+    dimensions:
+      - name: CITY
+        description: The city associated with the customer's location.
+        expr: CITY
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - Jakarta
+          - Bandung
+          - Surabaya
+      - name: COUNTRY
+        description: The country associated with the customer.
+        expr: COUNTRY
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - INDONESIA
+      - name: CUSTOMER_BUSINESS_KEY
+        description: The unique business identifier assigned to each customer.
+        expr: CUSTOMER_BUSINESS_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '7'
+          - '3'
+          - '1'
+      - name: CUSTOMER_KEY
+        description: Surrogate key uniquely identifying each customer record.
+        expr: CUSTOMER_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '3'
+          - '1'
+          - '2'
+      - name: EMAIL
+        description: The email address associated with the customer.
+        expr: EMAIL
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - andi.pratama@example.com
+          - gita.permata@example.com
+          - budi.santoso@example.com
+      - name: FIRST_NAME
+        description: The first name of the customer.
+        expr: FIRST_NAME
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - Andi
+          - Budi
+          - Hendra
+      - name: FULL_NAME
+        description: The full name of the customer.
+        expr: FULL_NAME
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - Andi Pratama
+          - Citra Lestari
+          - Budi Santoso
+      - name: IS_CURRENT
+        description: Indicates whether the customer record is the current active version.
+        expr: IS_CURRENT
+        data_type: BOOLEAN
+        access_modifier: public_access
+        sample_values:
+          - 'TRUE'
+      - name: IS_VALID
+        description: Indicates whether a customer record is considered valid.
+        expr: IS_VALID
+        data_type: BOOLEAN
+        access_modifier: public_access
+        sample_values:
+          - 'TRUE'
+      - name: LAST_NAME
+        description: The last name of the customer.
+        expr: LAST_NAME
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - Lestari
+          - Hidayat
+          - Pratama
+      - name: PHONE
+        description: Customer phone numbers.
+        expr: PHONE
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - '081234567002'
+          - '081234567006'
+          - '081234567001'
+    time_dimensions:
+      - name: PROCESSED_AT
+        description: The timestamp indicating when the customer record was processed.
+        expr: PROCESSED_AT
+        data_type: TIMESTAMP_LTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - 2026-08-15T11:52:57.303+0000
+      - name: SOURCE_EXTRACTED_AT
+        description: The timestamp indicating when the record was extracted from the source system.
+        expr: SOURCE_EXTRACTED_AT
+        data_type: TIMESTAMP_TZ(9)
+        access_modifier: public_access
+        sample_values:
+          - '2026-08-15T11:27:29.842Z'
+      - name: VALID_FROM
+        description: The timestamp indicating the start of the period during which the customer record is considered valid.
+        expr: VALID_FROM
+        data_type: TIMESTAMP_LTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - 2026-08-15T11:52:57.303+0000
+      - name: VALID_TO
+        description: The timestamp indicating when a customer record's validity period ends.
+        expr: VALID_TO
+        data_type: TIMESTAMP_NTZ(9)
+        access_modifier: public_access
+    primary_key:
+      columns:
+        - CUSTOMER_KEY
+  - name: DIM_DATE
+    description: The table contains records representing individual calendar dates for use in time-based analysis. Each record includes standard calendar attributes such as day, week, month, quarter, and year designations, along with indicators for weekends and holidays, and corresponding fiscal calendar equivalents.
+    base_table:
+      database: RETAIL_ANALYTICS
+      schema: GOLD
+      table: DIM_DATE
+    dimensions:
+      - name: DAY_OF_MONTH
+        description: The numeric day of the month component of a date.
+        expr: DAY_OF_MONTH
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '3'
+          - '2'
+          - '1'
+      - name: DAY_OF_WEEK
+        description: The numeric representation of the day of the week.
+        expr: DAY_OF_WEEK
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '4'
+          - '0'
+          - '6'
+      - name: DAY_OF_WEEK_NAME
+        description: The abbreviated name of the day of the week.
+        expr: DAY_OF_WEEK_NAME
+        data_type: VARCHAR(10)
+        access_modifier: public_access
+        sample_values:
+          - Thu
+          - Sat
+          - Fri
+      - name: DAY_OF_YEAR
+        description: The numeric day of the year ranging from 1 to 366.
+        expr: DAY_OF_YEAR
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '56'
+          - '255'
+          - '104'
+      - name: FISCAL_MONTH
+        description: The fiscal month number within the fiscal year.
+        expr: FISCAL_MONTH
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '2'
+          - '1'
+          - '3'
+      - name: FISCAL_QUARTER
+        description: The fiscal quarter of the financial reporting period.
+        expr: FISCAL_QUARTER
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '1'
+          - '3'
+          - '2'
+      - name: FISCAL_YEAR
+        description: The fiscal year associated with the date record.
+        expr: FISCAL_YEAR
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '2026'
+      - name: HOLIDAY_NAME
+        description: The name of the holiday associated with a given date.
+        expr: HOLIDAY_NAME
+        data_type: VARCHAR(100)
+        access_modifier: public_access
+      - name: IS_HOLIDAY
+        description: Indicates whether the date falls on a public holiday.
+        expr: IS_HOLIDAY
+        data_type: BOOLEAN
+        access_modifier: public_access
+        sample_values:
+          - 'FALSE'
+      - name: IS_WEEKEND
+        description: Indicates whether the date falls on a weekend day.
+        expr: IS_WEEKEND
+        data_type: BOOLEAN
+        access_modifier: public_access
+        sample_values:
+          - 'TRUE'
+          - 'FALSE'
+      - name: MONTH_NAME
+        description: The full name of the month associated with a given date.
+        expr: MONTH_NAME
+        data_type: VARCHAR(10)
+        access_modifier: public_access
+        sample_values:
+          - Feb
+          - Jan
+          - Mar
+      - name: MONTH_NAME_SHORT
+        description: Abbreviated month name.
+        expr: MONTH_NAME_SHORT
+        data_type: VARCHAR(3)
+        access_modifier: public_access
+        sample_values:
+          - Jan
+          - Feb
+          - Mar
+      - name: MONTH_NUMBER
+        description: The numeric representation of the month within a year.
+        expr: MONTH_NUMBER
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '2'
+          - '1'
+          - '3'
+      - name: QUARTER_NAME
+        description: The name of the fiscal or calendar quarter.
+        expr: QUARTER_NAME
+        data_type: VARCHAR(10)
+        access_modifier: public_access
+        sample_values:
+          - Q1
+          - Q3
+          - Q2
+      - name: QUARTER_NUMBER
+        description: The numeric representation of the quarter within a year.
+        expr: QUARTER_NUMBER
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '1'
+          - '2'
+          - '3'
+      - name: WEEK_OF_YEAR
+        description: The week number within a given year.
+        expr: WEEK_OF_YEAR
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '33'
+          - '11'
+          - '29'
+      - name: YEAR_NUMBER
+        description: The calendar year number associated with a given date.
+        expr: YEAR_NUMBER
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '2026'
+    time_dimensions:
+      - name: CREATED_AT
+        description: The timestamp indicating when the record was created.
+        expr: CREATED_AT
+        data_type: TIMESTAMP_NTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - '2026-08-15T04:59:23.368Z'
+          - '2026-08-15T04:59:42.894Z'
+          - '2026-08-15T05:00:09.402Z'
+      - name: DATE_KEY
+        description: The calendar date used as the primary key for the date dimension.
+        expr: DATE_KEY
+        data_type: DATE
+        access_modifier: public_access
+        sample_values:
+          - '2026-01-01'
+          - '2026-01-03'
+          - '2026-01-12'
+      - name: FULL_DATE
+        description: The full calendar date associated with each record in the date dimension.
+        expr: FULL_DATE
+        data_type: DATE
+        access_modifier: public_access
+        sample_values:
+          - '2026-05-22'
+          - '2026-01-02'
+          - '2026-02-26'
+    primary_key:
+      columns:
+        - DATE_KEY
+  - name: DIM_PRODUCT
+    description: The table contains records of products, serving as a dimension table with details about each product's identity, categorization, and pricing. Each record includes supplier associations, cost and selling price information, profit margin metrics, and price tier classifications, with support for tracking historical changes over time via validity date ranges.
+    base_table:
+      database: RETAIL_ANALYTICS
+      schema: GOLD
+      table: DIM_PRODUCT
+    dimensions:
+      - name: CATEGORY_DESCRIPTION
+        description: The descriptive label for the product category.
+        expr: CATEGORY_DESCRIPTION
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - Drinks and beverages
+          - Packaged snacks and light food
+          - Household and cleaning products
+      - name: CATEGORY_ID
+        description: The unique identifier for a product category.
+        expr: CATEGORY_ID
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '1'
+          - '2'
+          - '3'
+      - name: CATEGORY_NAME
+        description: The name of the product category.
+        expr: CATEGORY_NAME
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - Beverages
+          - Snacks
+          - Household
+      - name: IS_CURRENT
+        description: Indicates whether the product record is the current active version.
+        expr: IS_CURRENT
+        data_type: BOOLEAN
+        access_modifier: public_access
+        sample_values:
+          - 'TRUE'
+      - name: IS_VALID
+        description: Indicates whether a product is considered valid.
+        expr: IS_VALID
+        data_type: BOOLEAN
+        access_modifier: public_access
+        sample_values:
+          - 'TRUE'
+      - name: PRICE_TIER
+        description: The pricing tier or category assigned to a product.
+        expr: PRICE_TIER
+        data_type: VARCHAR(7)
+        access_modifier: public_access
+        sample_values:
+          - Premium
+      - name: PRODUCT_BUSINESS_KEY
+        description: A unique numeric identifier assigned to each product for business reference purposes.
+        expr: PRODUCT_BUSINESS_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '3'
+          - '2'
+          - '1'
+      - name: PRODUCT_KEY
+        description: The surrogate key uniquely identifying each product in the dimension table.
+        expr: PRODUCT_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '1'
+          - '3'
+          - '2'
+      - name: PRODUCT_NAME
+        description: The full name of the product.
+        expr: PRODUCT_NAME
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - Coca Cola 330ml
+          - Pepsi 330ml
+          - Mineral Water 600ml
+      - name: SKU
+        description: Stock Keeping Unit (SKU) identifier used to uniquely identify each product.
+        expr: SKU
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - BEV-002
+          - HOU-002
+          - BEV-003
+      - name: SUPPLIER_ID
+        description: The unique identifier assigned to a supplier.
+        expr: SUPPLIER_ID
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '4'
+          - '2'
+          - '1'
+    time_dimensions:
+      - name: PROCESSED_AT
+        description: The timestamp indicating when the product record was processed.
+        expr: PROCESSED_AT
+        data_type: TIMESTAMP_LTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - 2026-08-15T11:52:58.530+0000
+      - name: SOURCE_EXTRACTED_AT
+        description: The timestamp indicating when the record was extracted from the source system.
+        expr: SOURCE_EXTRACTED_AT
+        data_type: TIMESTAMP_TZ(9)
+        access_modifier: public_access
+        sample_values:
+          - '2026-08-15T11:27:29.842Z'
+      - name: VALID_FROM
+        description: The timestamp indicating the start of the period during which the product record is considered valid.
+        expr: VALID_FROM
+        data_type: TIMESTAMP_LTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - 2026-08-15T11:52:58.530+0000
+      - name: VALID_TO
+        description: The timestamp indicating when the product record's validity period ends.
+        expr: VALID_TO
+        data_type: TIMESTAMP_NTZ(9)
+        access_modifier: public_access
+    facts:
+      - name: COST_PRICE
+        description: The cost price of a product.
+        expr: COST_PRICE
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '2500'
+          - '5000'
+          - '4800'
+      - name: PROFIT_MARGIN
+        description: The profit margin of a product measured in monetary units.
+        expr: PROFIT_MARGIN
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '2200'
+          - '1500'
+          - '2500'
+      - name: PROFIT_MARGIN_PCT
+        description: The profit margin percentage for a product.
+        expr: PROFIT_MARGIN_PCT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '60'
+          - '45.833333333'
+          - '50'
+      - name: SELLING_PRICE
+        description: The selling price of a product.
+        expr: SELLING_PRICE
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '7500'
+          - '4000'
+          - '7000'
+    primary_key:
+      columns:
+        - PRODUCT_KEY
+  - name: DIM_STORE
+    description: The table contains records of retail store locations and their associated attributes. Each record includes details about a store's geographic location, operational timeline, and maturity classification, with support for tracking historical changes over time.
+    base_table:
+      database: RETAIL_ANALYTICS
+      schema: GOLD
+      table: DIM_STORE
+    dimensions:
+      - name: CITY
+        description: The city where the store is located.
+        expr: CITY
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - Bandung
+          - Surabaya
+          - Jakarta
+      - name: COUNTRY
+        description: The country where the store is located.
+        expr: COUNTRY
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - INDONESIA
+      - name: IS_CURRENT
+        description: Indicates whether the store record is the current active version.
+        expr: IS_CURRENT
+        data_type: BOOLEAN
+        access_modifier: public_access
+        sample_values:
+          - 'TRUE'
+      - name: IS_VALID
+        description: Indicates whether the store record is considered valid.
+        expr: IS_VALID
+        data_type: BOOLEAN
+        access_modifier: public_access
+        sample_values:
+          - 'TRUE'
+      - name: STATE
+        description: The state or province where the store is located.
+        expr: STATE
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - EAST JAVA
+          - WEST JAVA
+          - DKI JAKARTA
+      - name: STORE_AGE_YEARS
+        description: The age of the store measured in years.
+        expr: STORE_AGE_YEARS
+        data_type: NUMBER(9,0)
+        access_modifier: public_access
+        sample_values:
+          - '4'
+          - '3'
+          - '5'
+      - name: STORE_BUSINESS_KEY
+        description: The unique business identifier assigned to each store.
+        expr: STORE_BUSINESS_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '2'
+          - '3'
+          - '4'
+      - name: STORE_KEY
+        description: The surrogate key uniquely identifying each store record.
+        expr: STORE_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '3'
+          - '1'
+          - '2'
+      - name: STORE_MATURITY
+        description: The maturity or lifecycle stage of a store.
+        expr: STORE_MATURITY
+        data_type: VARCHAR(11)
+        access_modifier: public_access
+        sample_values:
+          - Mature
+          - Established
+      - name: STORE_NAME
+        description: The name of the retail store.
+        expr: STORE_NAME
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - Jakarta Mall
+          - Surabaya Plaza
+          - Bandung Central
+    time_dimensions:
+      - name: OPENED_DATE
+        description: The date on which the store was opened.
+        expr: OPENED_DATE
+        data_type: DATE
+        access_modifier: public_access
+        sample_values:
+          - '2022-01-15'
+          - '2024-01-05'
+          - '2023-03-10'
+      - name: PROCESSED_AT
+        description: The timestamp indicating when the store record was processed.
+        expr: PROCESSED_AT
+        data_type: TIMESTAMP_LTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - 2026-08-15T11:53:00.132+0000
+      - name: SOURCE_EXTRACTED_AT
+        description: The timestamp indicating when the record was extracted from the source system.
+        expr: SOURCE_EXTRACTED_AT
+        data_type: TIMESTAMP_TZ(9)
+        access_modifier: public_access
+        sample_values:
+          - '2026-08-15T11:27:29.841Z'
+      - name: VALID_FROM
+        description: The timestamp indicating the start of the period during which the store record is considered valid.
+        expr: VALID_FROM
+        data_type: TIMESTAMP_LTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - 2026-08-15T11:53:00.132+0000
+      - name: VALID_TO
+        description: The timestamp indicating when the store dimension record's validity period ends.
+        expr: VALID_TO
+        data_type: TIMESTAMP_NTZ(9)
+        access_modifier: public_access
+    primary_key:
+      columns:
+        - STORE_KEY
+  - name: DIM_SUPPLIER
+    description: The table contains records of suppliers, serving as a dimension table for retail analytics. Each record represents a supplier and includes details about the supplier's identity, contact information, and geographic location, along with record validity and temporal tracking attributes.
+    base_table:
+      database: RETAIL_ANALYTICS
+      schema: GOLD
+      table: DIM_SUPPLIER
+    dimensions:
+      - name: CONTACT_NAME
+        description: The full name of the contact person associated with the supplier.
+        expr: CONTACT_NAME
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - Sari Dewi
+          - Agus Setiawan
+          - Rudi Hartono
+      - name: COUNTRY
+        description: The country where the supplier is located.
+        expr: COUNTRY
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - INDONESIA
+      - name: EMAIL
+        description: Email addresses for suppliers.
+        expr: EMAIL
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - sari@nusantarafoods.com
+          - rudi@indobeverage.com
+          - agus@cleanhome.com
+      - name: IS_CURRENT
+        description: Indicates whether the supplier record is the current active version.
+        expr: IS_CURRENT
+        data_type: BOOLEAN
+        access_modifier: public_access
+        sample_values:
+          - 'TRUE'
+      - name: IS_VALID
+        description: Indicates whether the supplier record is considered valid.
+        expr: IS_VALID
+        data_type: BOOLEAN
+        access_modifier: public_access
+        sample_values:
+          - 'TRUE'
+      - name: SUPPLIER_BUSINESS_KEY
+        description: The unique business key identifying a supplier.
+        expr: SUPPLIER_BUSINESS_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '3'
+          - '5'
+          - '1'
+      - name: SUPPLIER_KEY
+        description: The surrogate key uniquely identifying each supplier record.
+        expr: SUPPLIER_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '2'
+          - '3'
+          - '1'
+      - name: SUPPLIER_NAME
+        description: The name of the supplier.
+        expr: SUPPLIER_NAME
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - Nusantara Foods
+          - Clean Home Indonesia
+          - Indo Beverage Supply
+    time_dimensions:
+      - name: PROCESSED_AT
+        description: The timestamp indicating when the supplier record was processed.
+        expr: PROCESSED_AT
+        data_type: TIMESTAMP_LTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - 2026-08-15T11:53:01.366+0000
+      - name: SOURCE_EXTRACTED_AT
+        description: The timestamp indicating when the supplier record was extracted from the source system.
+        expr: SOURCE_EXTRACTED_AT
+        data_type: TIMESTAMP_TZ(9)
+        access_modifier: public_access
+        sample_values:
+          - '2026-08-15T11:27:29.841Z'
+      - name: VALID_FROM
+        description: The timestamp indicating the start of the period during which the supplier record is considered valid.
+        expr: VALID_FROM
+        data_type: TIMESTAMP_LTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - 2026-08-15T11:53:01.366+0000
+      - name: VALID_TO
+        description: The timestamp indicating when the supplier record's validity period ends.
+        expr: VALID_TO
+        data_type: TIMESTAMP_NTZ(9)
+        access_modifier: public_access
+    primary_key:
+      columns:
+        - SUPPLIER_BUSINESS_KEY
+  - name: FACT_CUSTOMER_LIFETIME_VALUE
+    description: The table contains records of customer lifetime value metrics and behavioral segmentation data. Each record captures a single customer's purchasing history and value, including order history, financial contribution, profitability, and recency, frequency, and monetary (RFM) scores used for segmentation.
+    base_table:
+      database: RETAIL_ANALYTICS
+      schema: GOLD
+      table: FACT_CUSTOMER_LIFETIME_VALUE
+    dimensions:
+      - name: CUSTOMER_KEY
+        description: Surrogate key uniquely identifying a customer.
+        expr: CUSTOMER_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '4'
+          - '10'
+          - '1'
+      - name: CUSTOMER_LIFESPAN_DAYS
+        description: The number of days representing the duration of a customer's active lifespan.
+        expr: CUSTOMER_LIFESPAN_DAYS
+        data_type: NUMBER(9,0)
+        access_modifier: public_access
+        sample_values:
+          - '14'
+          - '5'
+          - '0'
+      - name: FREQUENCY
+        description: The number of times a customer has made a purchase.
+        expr: FREQUENCY
+        data_type: NUMBER(18,0)
+        access_modifier: public_access
+        sample_values:
+          - '3'
+          - '1'
+          - '2'
+      - name: FREQUENCY_SCORE
+        description: A score representing how frequently a customer makes purchases.
+        expr: FREQUENCY_SCORE
+        data_type: NUMBER(1,0)
+        access_modifier: public_access
+        sample_values:
+          - '2'
+          - '1'
+      - name: LIFETIME_ORDER_COUNT
+        description: The total number of orders placed by a customer over their lifetime.
+        expr: LIFETIME_ORDER_COUNT
+        data_type: NUMBER(18,0)
+        access_modifier: public_access
+        sample_values:
+          - '3'
+          - '2'
+          - '1'
+      - name: MONETARY_SCORE
+        description: A score representing the monetary value contribution of a customer used in lifetime value calculations.
+        expr: MONETARY_SCORE
+        data_type: NUMBER(1,0)
+        access_modifier: public_access
+        sample_values:
+          - '5'
+      - name: RECENCY_DAYS
+        description: The number of days since a customer last made a purchase.
+        expr: RECENCY_DAYS
+        data_type: NUMBER(9,0)
+        access_modifier: public_access
+        sample_values:
+          - '13'
+          - '5'
+          - '0'
+      - name: RECENCY_SCORE
+        description: A score indicating how recently a customer has made a purchase.
+        expr: RECENCY_SCORE
+        data_type: NUMBER(1,0)
+        access_modifier: public_access
+        sample_values:
+          - '5'
+    time_dimensions:
+      - name: CALCULATED_AT
+        description: The timestamp indicating when the customer lifetime value was calculated.
+        expr: CALCULATED_AT
+        data_type: TIMESTAMP_LTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - 2026-08-15T11:54:04.496+0000
+      - name: FIRST_ORDER_DATE
+        description: The date and time when a customer placed their first order.
+        expr: FIRST_ORDER_DATE
+        data_type: TIMESTAMP_NTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - '2026-08-01T09:15:00.000Z'
+          - '2026-08-06T17:15:00.000Z'
+          - '2026-08-02T15:20:00.000Z'
+      - name: LAST_ORDER_DATE
+        description: The date and time of the customer's most recent order.
+        expr: LAST_ORDER_DATE
+        data_type: TIMESTAMP_NTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - '2026-08-15T17:44:33.729Z'
+          - '2026-08-02T15:20:00.000Z'
+          - '2026-08-06T17:15:00.000Z'
+    facts:
+      - name: AVG_ORDER_VALUE
+        description: The average monetary value of orders placed by a customer.
+        expr: AVG_ORDER_VALUE
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '27500'
+          - '19500'
+          - '18000'
+      - name: LIFETIME_PROFIT
+        description: The total profit generated by a customer over their entire relationship with the business.
+        expr: LIFETIME_PROFIT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '10000'
+          - '13900'
+          - '12000'
+      - name: LIFETIME_VALUE
+        description: The estimated total monetary value a customer is expected to generate over the course of their relationship with the business.
+        expr: LIFETIME_VALUE
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '59000'
+          - '36000'
+          - '39000'
+      - name: MONETARY_VALUE
+        description: The total monetary value associated with a customer, representing their financial contribution or worth.
+        expr: MONETARY_VALUE
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '39000'
+          - '62000'
+          - '36000'
+    unique_keys:
+      - columns:
+          - CUSTOMER_KEY
+  - name: FACT_ORDER_ITEMS
+    description: The table contains records of individual order line items, capturing transactional details for each product purchased. Each record represents a single order item and includes details about the associated customer, product, and store, along with temporal attributes and financial metrics such as pricing, discounts, costs, and profit.
+    base_table:
+      database: RETAIL_ANALYTICS
+      schema: GOLD
+      table: FACT_ORDER_ITEMS
+    dimensions:
+      - name: CUSTOMER_KEY
+        description: Surrogate key that uniquely identifies a customer.
+        expr: CUSTOMER_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '2'
+          - '8'
+          - '1'
+      - name: ORDER_ID
+        description: The unique identifier for an order.
+        expr: ORDER_ID
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '6'
+          - '12'
+          - '17'
+      - name: ORDER_ITEM_KEY
+        description: Surrogate key uniquely identifying each order item record.
+        expr: ORDER_ITEM_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '24'
+          - '20'
+          - '33'
+      - name: ORDER_MONTH
+        description: The month of the year in which the order was placed.
+        expr: ORDER_MONTH
+        data_type: NUMBER(2,0)
+        access_modifier: public_access
+        sample_values:
+          - '8'
+      - name: ORDER_QUARTER
+        description: The fiscal quarter of the year in which the order was placed.
+        expr: ORDER_QUARTER
+        data_type: NUMBER(2,0)
+        access_modifier: public_access
+        sample_values:
+          - '3'
+      - name: ORDER_STATUS
+        description: The fulfillment status of an order.
+        expr: ORDER_STATUS
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - CANCELLED
+          - COMPLETED
+      - name: ORDER_YEAR
+        description: The year in which the order was placed.
+        expr: ORDER_YEAR
+        data_type: NUMBER(4,0)
+        access_modifier: public_access
+        sample_values:
+          - '2026'
+      - name: PAYMENT_METHOD
+        description: The method of payment used to complete the order transaction.
+        expr: PAYMENT_METHOD
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - DEBIT_CARD
+          - CREDIT_CARD
+          - E_WALLET
+      - name: PRODUCT_KEY
+        description: The surrogate key used to identify a product.
+        expr: PRODUCT_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '15'
+          - '14'
+          - '1'
+      - name: QUANTITY
+        description: The number of units ordered for a given order item.
+        expr: QUANTITY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '1'
+          - '2'
+          - '3'
+      - name: STORE_KEY
+        description: The surrogate key identifying the store associated with an order item.
+        expr: STORE_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '1'
+          - '3'
+          - '4'
+    time_dimensions:
+      - name: DATE_KEY
+        description: The date associated with each order item record.
+        expr: DATE_KEY
+        data_type: DATE
+        access_modifier: public_access
+        sample_values:
+          - '2026-08-03'
+          - '2026-08-07'
+          - '2026-08-09'
+      - name: FACT_PROCESSED_AT
+        description: The timestamp indicating when the fact record was processed.
+        expr: FACT_PROCESSED_AT
+        data_type: TIMESTAMP_LTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - 2026-08-15T11:53:03.759+0000
+      - name: ORDER_DATE
+        description: The date and time when the order was placed.
+        expr: ORDER_DATE
+        data_type: TIMESTAMP_NTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - '2026-08-03T16:40:00.000Z'
+          - '2026-08-15T17:44:33.729Z'
+          - '2026-08-07T13:10:00.000Z'
+    facts:
+      - name: DISCOUNT_AMOUNT
+        description: The monetary amount discounted from the original price of an order item.
+        expr: DISCOUNT_AMOUNT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '0'
+          - '3000'
+          - '2000'
+      - name: DISCOUNT_PCT
+        description: The discount percentage applied to an order item.
+        expr: DISCOUNT_PCT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '10'
+          - '8'
+          - '0'
+      - name: GROSS_AMOUNT
+        description: The total gross monetary amount for each order item before any deductions or adjustments.
+        expr: GROSS_AMOUNT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '30000'
+          - '15000'
+          - '5000'
+      - name: NET_AMOUNT
+        description: The net monetary amount associated with an order item after applicable adjustments or deductions.
+        expr: NET_AMOUNT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '30000'
+          - '15000'
+          - '5000'
+      - name: PRODUCT_PROFIT_MARGIN_PCT
+        description: The profit margin percentage for a product, expressed as a percentage.
+        expr: PRODUCT_PROFIT_MARGIN_PCT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '36.363636364'
+          - '38.888888889'
+          - '50'
+      - name: PROFIT
+        description: The profit earned on individual order items, which may be negative to indicate a loss.
+        expr: PROFIT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '-2500'
+          - '10000'
+          - '5000'
+      - name: TOTAL_COST
+        description: The total cost associated with an order item.
+        expr: TOTAL_COST
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '7500'
+          - '20000'
+          - '10000'
+      - name: UNIT_COST
+        description: The cost per unit of an ordered item.
+        expr: UNIT_COST
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '10000'
+          - '7500'
+          - '22000'
+      - name: UNIT_PRICE
+        description: The price per individual unit of an ordered item.
+        expr: UNIT_PRICE
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '5000'
+          - '30000'
+          - '15000'
+  - name: FACT_SALES_DAILY
+    description: The table contains daily aggregated sales performance metrics summarized at the store level. Each record captures a single store's activity for a given day, including order volumes, customer and product counts, and financial figures such as gross revenue, discounts, net revenue, cost, and profit.
+    base_table:
+      database: RETAIL_ANALYTICS
+      schema: GOLD
+      table: FACT_SALES_DAILY
+    dimensions:
+      - name: ORDER_COUNT
+        description: The total number of orders recorded for a given day.
+        expr: ORDER_COUNT
+        data_type: NUMBER(18,0)
+        access_modifier: public_access
+        sample_values:
+          - '1'
+      - name: ORDER_ITEM_COUNT
+        description: The total number of items included in an order.
+        expr: ORDER_ITEM_COUNT
+        data_type: NUMBER(18,0)
+        access_modifier: public_access
+        sample_values:
+          - '1'
+          - '2'
+      - name: STORE_KEY
+        description: The surrogate key identifying a store in the sales fact table.
+        expr: STORE_KEY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '2'
+          - '3'
+          - '1'
+      - name: TOTAL_QUANTITY
+        description: The total quantity of items sold.
+        expr: TOTAL_QUANTITY
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '4'
+          - '3'
+          - '2'
+      - name: UNIQUE_CUSTOMER_COUNT
+        description: The count of unique customers for a given day's sales activity.
+        expr: UNIQUE_CUSTOMER_COUNT
+        data_type: NUMBER(18,0)
+        access_modifier: public_access
+        sample_values:
+          - '1'
+      - name: UNIQUE_PRODUCT_COUNT
+        description: The count of distinct products sold within a given day.
+        expr: UNIQUE_PRODUCT_COUNT
+        data_type: NUMBER(18,0)
+        access_modifier: public_access
+        sample_values:
+          - '2'
+          - '1'
+    time_dimensions:
+      - name: AGGREGATED_AT
+        description: The timestamp indicating when the sales data was aggregated.
+        expr: AGGREGATED_AT
+        data_type: TIMESTAMP_LTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - 2026-08-15T11:54:00.055+0000
+      - name: DATE_KEY
+        description: The date associated with each daily sales record.
+        expr: DATE_KEY
+        data_type: DATE
+        access_modifier: public_access
+        sample_values:
+          - '2026-08-10'
+          - '2026-08-02'
+          - '2026-08-07'
+    facts:
+      - name: AVG_DISCOUNT_PCT
+        description: The average discount percentage applied to sales transactions.
+        expr: AVG_DISCOUNT_PCT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '4'
+          - '1.851851852'
+          - '3.125'
+      - name: AVG_ORDER_VALUE
+        description: The average monetary value of orders placed within a given day.
+        expr: AVG_ORDER_VALUE
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '28000'
+          - '19750'
+          - '19500'
+      - name: AVG_PROFIT_PER_ORDER
+        description: The average profit generated per order on a given day.
+        expr: AVG_PROFIT_PER_ORDER
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '5000'
+          - '8000'
+          - '4200'
+      - name: TOTAL_COST
+        description: The total cost associated with daily sales transactions.
+        expr: TOTAL_COST
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '29000'
+          - '35000'
+          - '20600'
+      - name: TOTAL_DISCOUNT_AMOUNT
+        description: The total monetary amount discounted from sales transactions within a given day.
+        expr: TOTAL_DISCOUNT_AMOUNT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '1000'
+          - '0'
+          - '2000'
+      - name: TOTAL_GROSS_AMOUNT
+        description: The total gross sales amount before any deductions or adjustments.
+        expr: TOTAL_GROSS_AMOUNT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '41000'
+          - '30000'
+          - '57000'
+      - name: TOTAL_NET_AMOUNT
+        description: The total net sales amount for a given day after deductions such as discounts and returns.
+        expr: TOTAL_NET_AMOUNT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '36000'
+          - '39000'
+          - '56000'
+      - name: TOTAL_PROFIT
+        description: The total profit generated from daily sales transactions.
+        expr: TOTAL_PROFIT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '16000'
+          - '10000'
+          - '8400'
+    unique_keys:
+      - columns:
+          - DATE_KEY
+          - STORE_KEY
+  - name: FACT_SALES_MONTHLY_CATEGORY
+    description: The table contains records of aggregated monthly sales performance metrics organized by product category. Each record captures supplier associations alongside order volumes, customer counts, and financial measures including revenue, cost, profit, and margin percentages.
+    base_table:
+      database: RETAIL_ANALYTICS
+      schema: GOLD
+      table: FACT_SALES_MONTHLY_CATEGORY
+    dimensions:
+      - name: CATEGORY_NAME
+        description: The name of the product category associated with a sales record.
+        expr: CATEGORY_NAME
+        data_type: VARCHAR(16777216)
+        access_modifier: public_access
+        sample_values:
+          - Personal Care
+          - Household
+          - Dairy
+      - name: ORDER_COUNT
+        description: The total number of orders recorded within a given month and category.
+        expr: ORDER_COUNT
+        data_type: NUMBER(18,0)
+        access_modifier: public_access
+        sample_values:
+          - '4'
+          - '9'
+          - '5'
+      - name: SUPPLIER_ID
+        description: The unique identifier assigned to a supplier.
+        expr: SUPPLIER_ID
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '3'
+          - '5'
+          - '4'
+      - name: TOTAL_QUANTITY_SOLD
+        description: The total number of units sold within a given month and category.
+        expr: TOTAL_QUANTITY_SOLD
+        data_type: NUMBER(38,0)
+        access_modifier: public_access
+        sample_values:
+          - '9'
+          - '7'
+          - '5'
+      - name: UNIQUE_CUSTOMER_COUNT
+        description: The number of unique customers associated with sales activity within a given month and category.
+        expr: UNIQUE_CUSTOMER_COUNT
+        data_type: NUMBER(18,0)
+        access_modifier: public_access
+        sample_values:
+          - '4'
+          - '3'
+          - '5'
+    time_dimensions:
+      - name: AGGREGATED_AT
+        description: The timestamp indicating when the sales data was aggregated.
+        expr: AGGREGATED_AT
+        data_type: TIMESTAMP_LTZ(9)
+        access_modifier: public_access
+        sample_values:
+          - 2026-08-15T11:54:04.495+0000
+      - name: MONTH_KEY
+        description: The first day of the month representing the monthly reporting period for sales data by category.
+        expr: MONTH_KEY
+        data_type: DATE
+        access_modifier: public_access
+        sample_values:
+          - '2026-08-01'
+    facts:
+      - name: AVG_PRODUCT_MARGIN_PCT
+        description: The average product margin expressed as a percentage for a given sales category and month.
+        expr: AVG_PRODUCT_MARGIN_PCT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '41.818181818'
+          - '47.442810458'
+          - '43.737373737'
+      - name: AVG_PROFIT_PER_ORDER
+        description: The average profit generated per order within a given sales category and month.
+        expr: AVG_PROFIT_PER_ORDER
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '7800'
+          - '5571.428571429'
+          - '5400'
+      - name: TOTAL_COST
+        description: The total cost associated with sales transactions aggregated at the monthly category level.
+        expr: TOTAL_COST
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '134000'
+          - '93000'
+          - '89200'
+      - name: TOTAL_PROFIT
+        description: The total profit generated from sales within a given month and category.
+        expr: TOTAL_PROFIT
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '27000'
+          - '50000'
+          - '39000'
+      - name: TOTAL_REVENUE
+        description: The total revenue generated from sales aggregated by month and category.
+        expr: TOTAL_REVENUE
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '97000'
+          - '132000'
+          - '184000'
+    unique_keys:
+      - columns:
+          - CATEGORY_NAME
+          - SUPPLIER_ID
+relationships:
+  - name: DIM_PRODUCT_TO_DIM_SUPPLIER
+    left_table: DIM_PRODUCT
+    right_table: DIM_SUPPLIER
+    relationship_columns:
+      - left_column: SUPPLIER_ID
+        right_column: SUPPLIER_BUSINESS_KEY
+    join_type: inner
+  - name: FACT_CUSTOMER_LIFETIME_VALUE_TO_DIM_CUSTOMER
+    left_table: FACT_CUSTOMER_LIFETIME_VALUE
+    right_table: DIM_CUSTOMER
+    relationship_columns:
+      - left_column: CUSTOMER_KEY
+        right_column: CUSTOMER_KEY
+    join_type: inner
+  - name: FACT_ORDER_ITEMS_TO_DIM_CUSTOMER
+    left_table: FACT_ORDER_ITEMS
+    right_table: DIM_CUSTOMER
+    relationship_columns:
+      - left_column: CUSTOMER_KEY
+        right_column: CUSTOMER_KEY
+    join_type: inner
+  - name: FACT_ORDER_ITEMS_TO_DIM_DATE
+    left_table: FACT_ORDER_ITEMS
+    right_table: DIM_DATE
+    relationship_columns:
+      - left_column: DATE_KEY
+        right_column: DATE_KEY
+    join_type: inner
+  - name: FACT_ORDER_ITEMS_TO_DIM_PRODUCT
+    left_table: FACT_ORDER_ITEMS
+    right_table: DIM_PRODUCT
+    relationship_columns:
+      - left_column: PRODUCT_KEY
+        right_column: PRODUCT_KEY
+    join_type: inner
+  - name: FACT_ORDER_ITEMS_TO_DIM_STORE
+    left_table: FACT_ORDER_ITEMS
+    right_table: DIM_STORE
+    relationship_columns:
+      - left_column: STORE_KEY
+        right_column: STORE_KEY
+    join_type: inner
+  - name: FACT_SALES_DAILY_TO_DIM_DATE
+    left_table: FACT_SALES_DAILY
+    right_table: DIM_DATE
+    relationship_columns:
+      - left_column: DATE_KEY
+        right_column: DATE_KEY
+    join_type: inner
+  - name: FACT_SALES_DAILY_TO_DIM_STORE
+    left_table: FACT_SALES_DAILY
+    right_table: DIM_STORE
+    relationship_columns:
+      - left_column: STORE_KEY
+        right_column: STORE_KEY
+    join_type: inner
+  - name: FACT_SALES_MONTHLY_CATEGORY_TO_DIM_SUPPLIER
+    left_table: FACT_SALES_MONTHLY_CATEGORY
+    right_table: DIM_SUPPLIER
+    relationship_columns:
+      - left_column: SUPPLIER_ID
+        right_column: SUPPLIER_BUSINESS_KEY
+    join_type: inner
