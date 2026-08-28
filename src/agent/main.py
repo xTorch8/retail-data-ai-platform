@@ -1,6 +1,3 @@
-from .controllers.auth_controller import router as auth_router
-from .controllers.query_controller import router as query_router
-from fastapi import FastAPI
 import logging
 from pathlib import Path
 
@@ -11,11 +8,19 @@ logging.basicConfig(
     filename = LOG_DIR / "app.log",
     filemode = "a",
     format = "%(asctime)s - %(levelname)s - %(message)s",
-    level = logging.DEBUG
+    level = logging.INFO,
+    force = True
 )
 
+from .controllers.auth_controller import router as auth_router
+from .controllers.chat_controller import router as chat_router
+from .controllers.query_controller import router as query_router
+from fastapi import FastAPI
+
 app = FastAPI()
+
 app.include_router(auth_router)
+app.include_router(chat_router)
 app.include_router(query_router)
 
 @app.get("/")
