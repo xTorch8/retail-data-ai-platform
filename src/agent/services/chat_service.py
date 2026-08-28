@@ -8,7 +8,7 @@ from ..models.api_model import APIResponseModel
 from ..models.chat_model import ChatRequest, ChatResponse
 from ..models.guardrail_model import GuardrailRequest
 from ..models.openai_model import GetOpenAIModelRequest, OpenAIModelTier
-from ..models.query_model import ExecuteSQLQueryRequest
+from ..models.query_model import ExecuteSQLQueryRequest, ExecuteSQLQueryResponse
 from ..services.query_service import QueryService
 from ..prompts.agent_prompts import TEXT_TO_SQL_PROMPT, ANALYTICAL_AGENT_PROMPT
 from snowflake.core import Root
@@ -164,7 +164,7 @@ class ChatService:
                 payload = ChatResponse(
                     message = analytical_response.content,
                     sql = sql_query,
-                    query_result = execution_result.result
+                    query_result = ExecuteSQLQueryResponse(**execution_result.model_dump())
                 )
             )
 

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import Any, Optional
+from .query_model import ExecuteSQLQueryResponse
+from typing import Optional
 
 class ChatRequest(BaseModel):
     message: str
@@ -7,4 +8,4 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     message: str
     sql: Optional[str] = None
-    query_result: Optional[Any] = None
+    query_result: Optional[ExecuteSQLQueryResponse] = None
