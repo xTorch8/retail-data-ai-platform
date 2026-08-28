@@ -1,7 +1,8 @@
 from ..config import get_config
+from ..guardrails.sql_guardrail import SQLGuardrail
 import logging
-import yaml
 from ..models.api_model import APIResponseModel
+from ..models.guardrail_model import GuardrailRequest
 from ..models.query_model import (
     ExecuteSQLQueryRequest,
     ExecuteSQLQueryResponse,
@@ -22,11 +23,24 @@ import yaml
 class QueryService:
     def __init__(self):
         self._config = get_config()
+        self._guardrail = SQLGuardrail()
         self._semantic_view : Optional[SemanticViewModel] = None 
 
     def execute_sql_query(self, root: Root, request: ExecuteSQLQueryRequest) -> APIResponseModel[ExecuteSQLQueryResponse]:
         logging.info(f"[INFO][query_service.py][execute_sql_query] Executing SQL Query")
         try:
+            validate_query_request = GuardrailRequest(
+                input = request.query
+            )
+            guardrail_result = self._guardrail.validate(validate_query_request)
+            if not guardrail_result.is_safe:
+                return APIResponseModel(
+                    error = guardrail_result.error,
+                    is_success = False,
+                    status_code = 400,
+                    message = "Error executing SQL Query"
+                )
+
             result = root.session.sql(request.query).collect()
             column_names = []
             if result:
