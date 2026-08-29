@@ -6,6 +6,12 @@ Evan Santosa | 2026 | Portfolio Project
 
 ### I. Executive Summary
 
+This portfolio project presents an end-to-end data engineering and natural language analytical platform designed to solve the data fragmentation and accessibility challenges faced by modern retail organizations. Retailers generate substantial transactional data across disparate systems, but business users often struggle to access integrated, timely metrics due to technical bottlenecks and siloed environments. This platform provides a secure, scalable reference architecture that converts raw operational transactions into real-time business insights queryable via simple natural language.
+
+The platform begins by capturing operational mutations from a transactional PostgreSQL database. To avoid query load on production systems, Airbyte replicates changes continuously using logical replication slots and Change Data Capture. The raw events land in a Snowflake database, where they are transformed incrementally using a three-tier Medallion architecture. Snowflake Dynamic Tables handle the processing from Bronze to Silver and Gold layers, utilizing automated dependency tracking and updates that target only modified rows. The Gold layer is modeled into a clean Star Schema, structuring order items and business metrics into intuitive facts and dimensions.
+
+To democratize data access, the platform exposes a secure Agentic AI interface built with LangChain and FastAPI. A Gradio user interface provides business users with a chat portal to ask operational questions, maintain session state, and view query results side-by-side. Behind the scenes, a model router assesses query complexity and routes requests across Small, Medium, and Large OpenAI model tiers to minimize latency and manage operational budgets. To safeguard database security, input prompts are sanitized by validation guardrails, and generated SQL queries are checked by parser guardrails to restrict execution to safe, read-only SELECT commands. The complete cloud infrastructure runs with an estimated operational cost of 341.65 USD per month, establishing a highly cost-effective and secure blueprint for self-service retail intelligence.
+
 ### II. Business Context
 
 #### A. Retail Businesses Are Increasingly Data-Rich, But Decision-Poor
@@ -598,7 +604,6 @@ The cost calculations are based on the following workload and pricing assumption
 | OpenAI Medium Model (gpt-4.1-nano) | Input: \$0.50/1M tokens, Output: \$1.50/1M tokens  | Intermediate analytical requests (30% of queries)     |
 | OpenAI Large Model (gpt-4o-mini)   | Input: \$2.50/1M tokens, Output: \$10.00/1M tokens | High-complexity multi-join questions (20% of queries) |
 
-
 #### B. Component Cost Breakdown
 
 ##### 1. Data Sources (PostgreSQL)
@@ -652,7 +657,6 @@ Costs are calculated based on query classification routing (1,000 queries/month)
 - Status: Local FastAPI/Gradio server hosting.
 - Cost: \$0.00 (Served locally on development environment).
 
-
 #### C. Monthly Cost Summary
 
 | Component                 | Cost (USD/Month) | Percentage |
@@ -665,6 +669,12 @@ Costs are calculated based on query classification routing (1,000 queries/month)
 | Total Operational Cost    | \$341.65         | 100%       |
 
 ### X. Conclusion
+
+This project successfully demonstrates the construction of a modern, end-to-end retail data platform that bridges the gap between raw transactional systems and natural language business intelligence. By leveraging a local PostgreSQL database as the operational source, Airbyte handles near real-time ingestion via Change Data Capture logical replication without introducing computational overhead to the production system.
+
+Within Snowflake, the adoption of a three-tier Medallion architecture combined with a Gold layer Star Schema ensures that raw data is systematically cleaned, validated, and structured into intuitive business entities. Using Snowflake Dynamic Tables simplifies pipeline orchestration, utilizing automated, incremental refreshes that reduce warehouse runtime and manage table dependencies natively.
+
+The Agentic AI layer democratizes data access by allowing non-technical business users to query complex transactional records using natural language. The FastAPI backend orchestrates a LangChain workflow that dynamically routes queries across Small, Medium, and Large OpenAI model tiers to optimize latency and api expenses. Safety remains central to this design, with strict prompt validation guardrails blocking injection threats and SQL parsing guardrails preventing non-SELECT statements from executing. Together with the Gradio user interface, this architecture provides retail organizations with a secure, highly scalable, and accessible foundation to minimize inventory distortion, track sales trends, and make data-driven decisions rapidly.
 
 ### XI. References
 
