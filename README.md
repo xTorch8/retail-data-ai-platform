@@ -495,6 +495,90 @@ erDiagram
 
 ### VIII. Implementation
 
+#### A. Technology Stack
+
+| Component       | Technology | Purpose                                            |
+| --------------- | ---------- | -------------------------------------------------- |
+| Source Database | PostgreSQL | Stores operational retail data                     |
+| CDC / Ingestion | Airbyte    | Captures and ingests database changes              |
+| Data Warehouse  | Snowflake  | Stores, transforms, and serves analytical data     |
+| AI Framework    | LangChain  | Orchestrates the Agentic AI workflow               |
+| LLM             | OpenAI API | Natural-language understanding and SQL generation  |
+| Backend         | FastAPI    | Provides the analytical API and agent endpoints    |
+| UI              | Gradio     | Provides the natural-language analytical interface |
+
+#### B. Source Database
+
+PostgreSQL is used as the operational source database for the retail platform. It represents the transactional system where core retail entities and business transactions are created and updated.
+
+The source database contains customer, store, category, supplier, product, order, and order-item data. ORDERS and ORDER_ITEMS represent the transactional layer, while the remaining tables provide the supporting master data required for retail analysis.
+
+PostgreSQL acts as the system of record for the platform. Changes made to the operational data are captured through CDC by Airbyte and subsequently ingested into Snowflake for analytical processing.
+
+Below are the SQL queries for setup the source database:
+
+- [Create Table Query](src/data/postgresql/1_create_tables.sql)
+- [Insert Initial Data Query](src/data/postgresql/2_insert_data.sql)
+- [Create Publication Query](src/data/postgresql/3_create_publication.sql)
+- [Setup Airbyte](src/data/postgresql/4_setup_airbyte.sql)
+
+#### C. CDC Data Ingestion
+
+To achieve high-quality data freshness without impacting the performance of the operational source database (PostgreSQL), the platform employs Change Data Capture (CDC) via Airbyte.
+
+Airbyte is used in CDC because traditional polling-based ingestion relies on queries with timestamp filters, which introduces heavy read loads on production tables and fails to capture hard-deleted rows. By utilizing PostgreSQL's Write-Ahead Log (WAL) logical replication via the `pgoutput` plugin, Airbyte captures row-level changes (`INSERT`, `UPDATE`, `DELETE`) asynchronously. This ensures near real-time synchronization, zero missed mutations, and minimal database overhead.
+
+Below are the configurations from the Airbyte interface:
+
+- Data Sources Setup:
+  ![Data Sources](src/data/airbyte/data_sources.png)
+- Destination Setup:
+  ![Destination](src/data/airbyte/destination.png)
+- Connections Configuration:
+  ![Connections](src/data/airbyte/connections.png)
+- Source Database Schema Mapping:
+  ![Schema](src/data/airbyte/schema.png)
+
+#### D. Snowflake Data Platform
+
+Snowflake serves as the central data cloud for storing, transforming, and querying the retail data.
+
+Snowflake’s separation of compute and storage allows ingestion pipelines to run on dedicated virtual warehouses without consuming the resources needed for user-facing AI queries. This design prevents resource contention and controls cloud compute costs.
+
+To systematically clean and prepare raw ingestion data for analysis, the pipeline adopts a three-tier Medallion architecture. The Bronze layer serves as the landing zone, preserving raw historical CDC events and replication metadata exactly as they are captured from PostgreSQL. This raw log is then transformed into the Silver layer, which serves as a validated, clean operational store by filtering logical deletions, standardizing formats, and cleansing fields. Finally, the conformed Silver data is structured and aggregated in the Gold layer for downstream consumption.
+
+The Gold layer is modeled into a Star Schema comprising fact tables and dimension tables. This dimensional design minimizes join path complexity for analytical queries and structures the data into business entities that are easily navigated by the AI agent.
+
+Rather than orchestrating complex, schedule-triggered ETL tasks and writing manual `MERGE` logic, the platform uses Snowflake Dynamic Tables for Silver and Gold layer transformations, where transformation pipelines are defined simply as SQL queries.Snowflake also automatically manages pipeline scheduling (`TARGET_LAG = '5 minutes'` to `'15 minutes'`) and updates only the rows that changed since the last run.
+The Downstream Gold tables automatically wait for upstream Silver tables to refresh, ensuring consistent data quality.
+
+Below are the SQL queries for setup the source database:
+
+- [Pipeline Creation Script](src/data/snowflake/2_create_pipeline.sql)
+- [Setup Airbyte Script](src/data/snowflake/1_setup_airbyte.sql)
+- [Semantic View Configuration](src/data/snowflake/SV_RETAIL_ANALYTICS.yaml)
+
+#### E. Agentic AI
+
+The AI analytical layer acts as a natural language interface to the data warehouse, built on a secure agentic framework using LangChain and FastAPI.
+
+- **Prompt Guardrails**: Every incoming user prompt passes through the Prompt Giardrail before reaching the LLM. It limits prompt length and uses regular expressions to detect security threats, including direct instruction overrides, jailbreaks, system prompt extraction attempts, persona manipulation, and obfuscated string inputs.
+- **Model Routing**: To optimize API usage, user queries are sent to a complexity router running the Small Model (`gpt-5-nano`). Straightforward single-table lookups are processed directly by the Small Model (`gpt-5-nano`), standard analytical questions involving simple joins are routed to the Medium Model (`gpt-4.1-nano`), while complex queries requiring advanced reasoning or multi-layer aggregations are escalated to the Large Model (`gpt-4o-mini`).
+- **Tools**: The agent discovers and queries the schema using four specialized database metadata and retrieval tools:
+  - `get_table_list`: Returns names of active tables within the catalog.
+  - `get_table_detail`: Details schema fields, descriptions, data types, and primary keys.
+  - `get_relationship_list`: Traces primary-to-foreign key join paths between tables.
+  - `execute_sql_query`: Runs the query against Snowflake.
+- **SQL Guardrails**: Before execution, generated queries are parsed by the SQL Guardrail using the `sqlglot` engine. Queries are restricted strictly to read-only statements (`Select`, `With`, `Show`, `Describe`), automatically blocking any write, update, or structural schema changes.
+
+#### F. User Interface
+
+The natural language analytical interface is built with Gradio and integrated with FastAPI. Gradio was selected because it enables rapid, Python-native prototyping of interactive interfaces and offers robust support for conversational components. Through this interface, the platform securely manages user authentication and maintains session states via token state variables. It presents users with a cohesive layout where they can chat with the assistant, view the dynamically generated SQL queries, and inspect raw data tables returned from Snowflake.
+
+Below is an overview walkthrough of the application, demonstrating the secure login flow, real-time natural language query execution, and database results rendering:
+
+<video src="documents/application.mp4" controls width="100%"></video>
+
 ### IX. Cost Analysis
 
 ### X. Conclusion
