@@ -7,10 +7,14 @@ from typing import List, Optional
 class ChatMessageRole(Enum):
     USER = 1
     ASSISTANT = 2
+    TOOL = 3
 
 class ChatMessage(BaseModel):
     role: ChatMessageRole
     content: str
+    name: Optional[str] = None
+    tool_call_id: Optional[str] = None
+    tool_calls: Optional[List[dict]] = None
 
 class ChatRequest(BaseModel):
     message: str
@@ -21,3 +25,4 @@ class ChatResponse(BaseModel):
     message: str
     sql: Optional[str] = None
     query_result: Optional[ExecuteSQLQueryResponse] = None
+    agent_messages: Optional[List[ChatMessage]] = None

@@ -4,7 +4,7 @@ import json
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 import logging
 from ..models.api_model import APIResponseModel
-from ..models.chat_model import ChatMessageRole, ChatRequest, ChatResponse
+from ..models.chat_model import ChatMessage, ChatMessageRole, ChatRequest, ChatResponse
 from ..models.guardrail_model import GuardrailRequest
 from ..models.openai_model import GetOpenAIModelRequest, OpenAIModelTier
 from ..models.query_model import ExecuteSQLQueryResponse
@@ -50,7 +50,7 @@ class ChatService:
                     for msg in request.history[-4:]:
                         if msg.role == ChatMessageRole.USER:
                             messages.append(HumanMessage(content = msg.content))
-                        else:
+                        elif msg.role == ChatMessageRole.ASSISTANT:
                             messages.append(AIMessage(content = msg.content))
 
                 messages.append(HumanMessage(content = request.message))
@@ -91,8 +91,17 @@ class ChatService:
                 for msg in request.history:
                     if msg.role == ChatMessageRole.USER:
                         agent_messages.append(HumanMessage(content = msg.content))
-                    else:
-                        agent_messages.append(AIMessage(content = msg.content))
+                    elif msg.role == ChatMessageRole.TOOL:
+                        agent_messages.append(ToolMessage(
+                            content = msg.content,
+                            name = msg.name,
+                            tool_call_id = msg.tool_call_id
+                        ))
+                    elif msg.role == ChatMessageRole.ASSISTANT:
+                        agent_messages.append(AIMessage(
+                            content = msg.content,
+                            tool_calls = msg.tool_calls or []
+                        ))
 
             agent_messages.append(HumanMessage(content = request.message))
 
@@ -173,12 +182,31 @@ class ChatService:
                         break
             #endregion
             
+            chat_messages = []
+            for msg in agent_messages:
+                if isinstance(msg, HumanMessage):
+                    chat_messages.append(ChatMessage(role = ChatMessageRole.USER, content = msg.content))
+                elif isinstance(msg, AIMessage):
+                    chat_messages.append(ChatMessage(
+                        role = ChatMessageRole.ASSISTANT,
+                        content = msg.content,
+                        tool_calls = msg.tool_calls
+                    ))
+                elif isinstance(msg, ToolMessage):
+                    chat_messages.append(ChatMessage(
+                        role = ChatMessageRole.TOOL,
+                        content = msg.content,
+                        name = msg.name,
+                        tool_call_id = msg.tool_call_id
+                    ))
+
             return APIResponseModel[ChatResponse](
                 message = "Chat response generated successfully",
                 payload = ChatResponse(
                     message = agent_messages[-1].content,
                     sql = sql_query,
-                    query_result = query_result
+                    query_result = query_result,
+                    agent_messages = chat_messages
                 )
             )
 
