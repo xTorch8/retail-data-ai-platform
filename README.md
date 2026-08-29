@@ -581,6 +581,89 @@ Below is an overview walkthrough of the application, demonstrating the secure lo
 
 ### IX. Cost Analysis
 
+To provide a realistic outlook on running this platform in a production-like setting, this section outlines the monthly operational costs based on a standard workload.
+
+#### A. Operational Assumptions
+
+The cost calculations are based on the following workload and pricing assumptions:
+
+| Parameter                          | Assumed Value                                      | Source / Detail                                       |
+| :--------------------------------- | :------------------------------------------------- | :---------------------------------------------------- |
+| Monthly Query Volume               | 1,000 analytical queries                           | Input questions from business users                   |
+| Daily Data Ingestion               | 100,000 row updates/day                            | Continuous operational transaction volume             |
+| Total Data Storage                 | 10 GB (compressed)                                 | Database storage footprint in Snowflake               |
+| Standard Snowflake Credit Cost     | \$2.50 / credit                                    | AWS Asia Pacific (Jakarta) - Standard Edition         |
+| Snowflake Warehouse Size           | Extra Small (XS)                                   | 1 Credit / Active Compute Hour                        |
+| OpenAI Small Model (gpt-5-nano)    | Input: \$0.15/1M tokens, Output: \$0.60/1M tokens  | Routing & simple query executions (50% of queries)    |
+| OpenAI Medium Model (gpt-4.1-nano) | Input: \$0.50/1M tokens, Output: \$1.50/1M tokens  | Intermediate analytical requests (30% of queries)     |
+| OpenAI Large Model (gpt-4o-mini)   | Input: \$2.50/1M tokens, Output: \$10.00/1M tokens | High-complexity multi-join questions (20% of queries) |
+
+
+#### B. Component Cost Breakdown
+
+##### 1. Data Sources (PostgreSQL)
+
+- Status: Local deployment (Docker/On-Premise).
+- Cost: \$0.00 (Compute and maintenance are hosted on local resources).
+
+##### 2. CDC Ingestion (Airbyte)
+
+- Status: Local deployment (Airbyte Community Edition in Docker).
+- Cost: \$0.00 (Uses local resources for processing and replicates WAL transactions without network egress fees).
+
+##### 3. Snowflake Data Platform
+
+Snowflake usage is divided into virtual warehouse compute charges (billed per second of active warehouse uptime) and storage charges.
+
+- Compute Warehouse Charges:
+  - Incremental ELT (XS_ELT): Automatically processes Dynamic Table refreshes for 10 minutes every hour. 24 refreshes/day × 10 minutes = 4 hours of XS compute time = 4.0 credits/day.
+  - User Queries (XS_QUERY): Auto-suspends after 1 minute of inactivity. Assumed active for a combined total of 30 minutes/day = 0.5 credits/day.
+  - Monthly Compute Credits: 4.5 credits/day × 30 days = 135 credits.
+  - Compute Cost: 135 credits × \$2.50/credit = \$337.50 / month.
+- Data Storage Charges:
+  - 10 GB stored is billed fractionally against the flat On-Demand rate of \$25.00/TB/month.
+  - Storage Cost: \$1.00 / month (rounded up to the minimum billing threshold).
+- Total Snowflake Cost: \$338.50 / month.
+
+##### 4. Agentic AI (OpenAI API)
+
+Costs are calculated based on query classification routing (1,000 queries/month):
+
+- Model Classifier Routing: All 1,000 queries run through a router prompt on the Small Model (gpt-5-nano) to classify complexity (avg. 1,500 input tokens, 20 output tokens).
+  - Input: 1,000 × 1,500 = 1.5M tokens × \$0.15/1M = \$0.225
+  - Output: 1,000 × 20 = 0.02M tokens × \$0.60/1M = \$0.012
+  - Router Subtotal: \$0.24
+- Small Model Execution (50% / 500 queries): Handled by gpt-5-nano (avg. 1,500 input tokens, 200 output tokens).
+  - Input: 500 × 1,500 = 0.75M tokens × \$0.15/1M = \$0.113
+  - Output: 500 × 200 = 0.10M tokens × \$0.60/1M = \$0.060
+  - Small Subtotal: \$0.17
+- Medium Model Execution (30% / 300 queries): Handled by gpt-4.1-nano (avg. 2,000 input tokens, 300 output tokens).
+  - Input: 300 × 2,000 = 0.60M tokens × \$0.50/1M = \$0.300
+  - Output: 300 × 300 = 0.09M tokens × \$1.50/1M = \$0.135
+  - Medium Subtotal: \$0.44
+- Large Model Execution (20% / 200 queries): Handled by gpt-4o-mini (avg. 3,000 input tokens, 400 output tokens).
+  - Input: 200 × 3,000 = 0.60M tokens × \$2.50/1M = \$1.500
+  - Output: 200 × 400 = 0.08M tokens × \$10.00/1M = \$0.800
+  - Large Subtotal: \$2.30
+- Total OpenAI API Cost: \$0.24 + \$0.17 + \$0.44 + \$2.30 = \$3.15 / month.
+
+##### 5. User Interface (Gradio)
+
+- Status: Local FastAPI/Gradio server hosting.
+- Cost: \$0.00 (Served locally on development environment).
+
+
+#### C. Monthly Cost Summary
+
+| Component                 | Cost (USD/Month) | Percentage |
+| :------------------------ | :--------------- | :--------- |
+| Data Sources (PostgreSQL) | \$0.00           | 0.0%       |
+| CDC Ingestion (Airbyte)   | \$0.00           | 0.0%       |
+| Snowflake Data Platform   | \$338.50         | 99.1%      |
+| Agentic AI (OpenAI API)   | \$3.15           | 0.9%       |
+| User Interface (Gradio)   | \$0.00           | 0.0%       |
+| Total Operational Cost    | \$341.65         | 100%       |
+
 ### X. Conclusion
 
 ### XI. References
@@ -590,3 +673,4 @@ Below is an overview walkthrough of the application, demonstrating the secure lo
 - Y. Liu, D. Kalaitzi, M. Wang, and C. Papanagnou, “A machine learning approach to inventory stockout prediction,” Journal of Digital Economy, vol. 4, pp. 144–155, 2025, doi: 10.1016/j.jdec.2025.06.002.
 - X. Wang and Y. Zhang, “LLM-driven business intelligence for retail digital transformation: A decision support system case study,” Journal of Organizational and End User Computing, vol. 38, no. 1, 2026, doi: 10.4018/JOEUC.411214.
 - IHL Group, “Fixing Inventory Distortion – Who’s Winning, Who’s Failing, What’s Working,” IHL Group, 2025. [Online]. Available: https://www.ihlservices.com/product/fixing-inventory-distortion-whos-winning-whos-failing-whats-working/
+- Snowflake, “Snowflake Service Consumption Table,” 2026. [Online]. Available: https://www.snowflake.com/legal-files/CreditConsumptionTable.pdf
