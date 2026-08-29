@@ -2,12 +2,19 @@ from langchain_core.tools import tool
 from snowflake.core import Root
 from ..services.query_service import QueryService
 from ..models.query_model import (
-    GetTableListRequest,
-    GetTableDetailRequest,
+    ExecuteSQLQueryRequest,
     GetRelationshipListRequest,
+    GetTableDetailRequest,
+    GetTableListRequest,
 )
 
 def get_query_tools(root: Root, query_service: QueryService):
+    @tool
+    def execute_sql_query(request: ExecuteSQLQueryRequest) -> str:
+        """Executes a SQL SELECT query against the retail database and returns the result."""
+        response = query_service.execute_sql_query(root, request)
+        return response.model_dump_json()
+
     @tool
     def get_table_list(request: GetTableListRequest) -> str:
         """Retrieves the list of table names defined in the semantic view."""
@@ -27,6 +34,7 @@ def get_query_tools(root: Root, query_service: QueryService):
         return response.model_dump_json()
 
     return [
+        execute_sql_query,
         get_table_list, 
         get_table_detail, 
         get_relationship_list
